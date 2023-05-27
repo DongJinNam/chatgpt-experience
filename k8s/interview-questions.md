@@ -46,3 +46,34 @@ Kubernetes provides built-in self-healing capabilities. If a container fails or 
 
 These questions and answers should give you a good starting point for a Kubernetes interview as a junior developer. It's important to study and gain practical experience with Kubernetes to deepen your understanding of its concepts and usage.
 ```
+
+### 배포 전략
+
+```
+Rolling Updates:
+* Description: Rolling updates deploy new versions gradually by creating new pods while terminating the old ones.
+* Pros:
+  * Minimizes downtime by gradually transitioning to the new version.
+  * Provides easy rollback to the previous version in case of issues.
+* Cons:
+  * Requires additional resources to run both old and new versions simultaneously during the update.
+  * The update process may take longer if there are many pods to update.
+
+Blue-Green Deployment:
+* Description: Blue-Green deployment involves running two identical environments (blue and green) simultaneously, with only one active at a time.
+* Pros:
+  * Enables zero-downtime deployments by switching traffic between the blue and green environments.
+  * Provides an easy rollback mechanism by routing traffic back to the previous environment.
+* Cons:
+  * Requires more resources to maintain two active environments simultaneously.
+  * Requires additional configuration for routing traffic between environments.
+
+Canary Deployment:
+* Description: Canary deployment gradually introduces a new version to a subset of users while monitoring its performance before rolling it out to the entire user base.
+* Pros:
+  * Allows testing the new version in a controlled manner with a limited number of users.
+  * Provides early feedback and helps identify issues before impacting all users.
+* Cons:
+  * Requires careful monitoring and analysis to ensure the new version performs well.
+  * Increased complexity in managing traffic routing and version control.
+```
