@@ -158,9 +158,7 @@ Sure! The SOLID principles are a set of guidelines for writing clean and maintai
            this.width = length;
        }
    
-       public
-
- void setWidth(double width) {
+       public void setWidth(double width) {
            this.length = width;
            this.width = width;
        }
