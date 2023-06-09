@@ -243,3 +243,129 @@ SET GLOBAL innodb_lock_wait_timeout = 5;
    - `OPTIMIZE TABLE` 명령을 사용하여 InnoDB 테이블의 공간을 정리할 수 있습니다. 이는 테이블을 다시 빌드하여 공간을 회수하고, 인덱스를 정렬합니다.
 
 이상과 같은 주제들은 면접에서 InnoDB에 대해 물어볼 수 있는 핵심적인 내용들입니다. 기본적인 개념을 정확히 이해하고 있으면 유용할 것으로 기대됩니다.
+
+## show me the actual cases of spring boot application problems what a lot of developers need to experience and explain how to solve these issues with details including before and after as korean.
+
+Spring Boot 애플리케이션 개발 시 많은 개발자들이 경험하는 문제들과 해결 방법에 대해 설명드리겠습니다.
+
+### 1. 메모리 부족 (Out of Memory)
+
+#### 문제 상황:
+Spring Boot 애플리케이션에서 대량의 데이터를 처리하거나 많은 요청을 처리할 때, 메모리 부족으로 인해 애플리케이션이 종료되는 경우가 있습니다.
+
+#### 해결 방법:
+- **JVM 옵션 조정**: 애플리케이션에 할당된 메모리를 증가시킵니다. 예: `-Xmx1024m` 옵션으로 최대 힙 크기를 1024MB로 설정합니다.
+- **데이터 처리 최적화**: 대량의 데이터를 처리할 때는 적절한 batch size로 나누어 처리합니다.
+
+### 2. 느린 기동 시간
+
+#### 문제 상황:
+Spring Boot 애플리케이션의 기동 시간이 너무 길어서 개발 효율이 떨어지는 경우가 있습니다.
+
+#### 해결 방법:
+- **Lazy Initialization**: 애플리케이션의 빈(Bean)들을 필요할 때 로드하도록 설정합니다.
+  - `spring.main.lazy-initialization=true` 을 `application.properties`에 설정합니다.
+
+### 3. 순환 의존성 (Circular Dependency)
+
+#### 문제 상황:
+두 개 이상의 빈이 서로를 참조하여 순환 의존성이 발생하면, Spring Boot 애플리케이션은 시작되지 않습니다.
+
+#### 해결 방법:
+- **의존성 분리**: 순환 의존성을 제거하기 위해 클래스간 의존성을 재구성합니다. 
+- **@Lazy 어노테이션 사용**: 필요한 빈을 늦춰서 로드하도록 설정하여 순환 의존성 문제를 해결할 수 있습니다.
+
+### 4. 데이터베이스 연결 문제
+
+#### 문제 상황:
+데이터베이스에 연결할 수 없거나, 연결이 끊어지는 문제가 발생합니다.
+
+#### 해결 방법:
+- **연결 정보 확인**: `application.properties` 파일에서 데이터베이스 연결 정보를 확인합니다.
+- **연결 풀 설정**: HikariCP와 같은 연결 풀을 사용하여 데이터베이스 연결을 효율적으로 관리합니다.
+
+### 5. CORS (Cross-Origin Resource Sharing) 문제
+
+#### 문제 상황:
+다른 도메인에서 호스팅되는 웹 페이지가 Spring Boot 애플리케이션의 API를 호출할 때 CORS 문제로 인해 요청이 거부됩니다.
+
+#### 해결 방법:
+- **CORS 설정 추가**: Spring
+
+ Boot에서 제공하는 CORS 설정을 사용하여 허용된 출처를 지정합니다.
+
+#### 예시 코드 (Before):
+```java
+@RestController
+public class MyController {
+    @GetMapping("/api/data")
+    public Data getData() {
+        return new Data();
+    }
+}
+```
+
+#### 예시 코드 (After):
+```java
+@RestController
+public class MyController {
+
+    @CrossOrigin(origins = "https://allowed-origin.com")
+    @GetMapping("/api/data")
+    public Data getData() {
+        return new Data();
+    }
+}
+```
+
+이상과 같이 Spring Boot 애플리케이션 개발 시 자주 발생하는 문제들을 인지하고 적절한 해결 방법을 적용함으로써, 애플리케이션의 안정성과 개발 효율을 높일 수 있습니다.
+
+## show me the differences of bean injection on spring boot between eager loading and lazy loading and explain what is good bean injection depends on??
+
+In Spring Boot, beans can be loaded in two ways: Eager Loading and Lazy Loading. Let me explain the differences and when to use each.
+
+### Eager Loading:
+
+#### What it is:
+By default, Spring Boot loads all the beans at the startup of the application. This means that whether or not you use a specific bean, it is created and injected as soon as the application context is loaded.
+
+#### Pros:
+- Since all beans are ready to use at startup, it ensures faster response times for the first request that needs them.
+- You will know at the startup if there are any issues in the bean configuration or bean creation.
+
+#### Cons:
+- Increases the startup time of the application.
+- Consumes more memory from the beginning even for those beans which might not be used.
+
+### Lazy Loading:
+
+#### What it is:
+In contrast, with lazy loading, the bean is created and initialized only when it is first requested. You can mark a bean as lazy by using `@Lazy` annotation.
+
+#### Pros:
+- Faster application startup time because not all beans are created at once.
+- Consumes less memory at startup as beans are only created when needed.
+
+#### Cons:
+- The first request to access the bean might be slower because the bean needs to be created.
+- Any configuration issues related to that bean won’t be known until it is first accessed.
+
+### Choosing the Right Approach:
+
+- **For Development Environment**: Using lazy loading can be beneficial during development as it reduces the startup time and you might not need all the beans loaded for development/testing purposes.
+- **For Critical Beans**: For beans that are essential for application functioning and are sure to be used, eager loading is a good choice.
+- **For Optional or Rarely Used Beans**: If a bean is not critical and might not be used frequently, lazy loading would be a better choice to save resources.
+- **Memory Considerations**: If your application is memory-sensitive, then lazy loading could help in utilizing memory more efficiently.
+
+Example of Lazy Loading:
+```java
+@Configuration
+@Lazy
+public class MyConfiguration {
+    //...
+}
+```
+
+In summary, the decision between eager and lazy loading should be based on the specific use case, how critical the bean is, the application's startup time requirements, and memory considerations.
+
+
